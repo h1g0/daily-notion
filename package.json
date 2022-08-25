@@ -1,0 +1,8 @@
+{
+  "name": "daily-notion",
+  "version": "0.1.0",
+  "description": "A simple daily notes app for Notion.",
+  "main": "index.js",
+  "author": "hi_go",
+  "license": "MIT"
+}
