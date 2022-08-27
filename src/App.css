@@ -1,0 +1,4 @@
+html, body, div#root, .App{
+  height: 100%;
+  box-sizing: border-box;
+}
