@@ -1,24 +1,14 @@
-import React from 'react';
-import logo from './logo.svg';
+import { Button, EditableText, TextArea } from '@blueprintjs/core';
+import { WidgetButton } from '@blueprintjs/icons/lib/esm/generated/16px/paths';
 import './App.css';
+import { Navigation } from './Components/Navigation';
+import { Notepad } from './Components/Notepad';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Navigation />
+      <Notepad />
     </div>
   );
 }
