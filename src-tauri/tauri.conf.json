@@ -7,16 +7,20 @@
   },
   "package": {
     "productName": "daily-notion",
-    "version": "0.1.0"
+    "version": "../package.json"
   },
   "tauri": {
     "allowlist": {
-      "all": true
+      "http": {
+        "all": true,
+        "request": true,
+        "scope": ["https://api.notion.com/v1/*"]
+      }
     },
     "bundle": {
       "active": true,
-      "category": "DeveloperTool",
-      "copyright": "",
+      "category": "Productivity",
+      "copyright": "Copyright (c) 2022 hi_go",
       "deb": {
         "depends": []
       },
@@ -25,7 +29,6 @@
         "icons/32x32.png",
         "icons/128x128.png",
         "icons/128x128@2x.png",
-        "icons/icon.icns",
         "icons/icon.ico"
       ],
       "identifier": "red.clutte.daily-notion",
@@ -47,7 +50,7 @@
       }
     },
     "security": {
-      "csp": null
+      "csp": "https://api.notion.com"
     },
     "updater": {
       "active": false
