@@ -14,4 +14,8 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
 //TODO: remove test code
 const notion = new NotionHandler(token, dbId);
 const res = await notion.getPageId('2022-08-28');
-console.log(JSON.stringify(res));
+console.log(res);
+if(res){
+  const content = await notion.getBlockIdText(res);
+  console.log(`id: ${content?.id}, text: ${content?.text}`);
+}
