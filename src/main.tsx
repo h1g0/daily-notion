@@ -1,3 +1,4 @@
+import { exit } from "process";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import {App} from "./App";
@@ -17,5 +18,10 @@ const res = await notion.getPageId('2022-08-28');
 console.log(res);
 if(res){
   const content = await notion.getBlockIdText(res);
-  console.log(`id: ${content?.id}, text: ${content?.text}`);
+  if(content){
+    console.log(`id: ${content.id}, text: ${content.text}`);
+    const update = await notion.updateParagraphBlockByText(content.id, content.text + `\n${(new Date()).toISOString()}`);
+    console.log(JSON.stringify(update));
+  }
 }
+

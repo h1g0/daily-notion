@@ -1,4 +1,4 @@
-import { BlockObjectResponse, ListBlockChildrenResponse, ParagraphBlockObjectResponse, QueryDatabaseResponse, RichTextItemResponse } from '@notionhq/client/build/src/api-endpoints';
+import { BlockObjectResponse, ListBlockChildrenResponse, ParagraphBlockObjectResponse, QueryDatabaseResponse, RichTextItemResponse, TextRichTextItemResponse, UpdateBlockParameters, UpdateBlockResponse } from '@notionhq/client/build/src/api-endpoints';
 import { Body, fetch } from '@tauri-apps/api/http'
 
 const NOTION_VERSION = '2022-06-28';
@@ -10,6 +10,7 @@ export class NotionHandler {
     private dbId: string;
     private getHeaders;
     private postHeaders;
+    private patchHeaders;
 
     public constructor(token: string, dbId: string) {
         this.baseUrl = 'https://api.notion.com/v1';
@@ -25,6 +26,9 @@ export class NotionHandler {
         this.postHeaders = {
             ...headers,
             'Content-Type': 'application/json',
+        }
+        this.patchHeaders = {
+            ...this.postHeaders,
         }
     }
 
@@ -113,5 +117,45 @@ export class NotionHandler {
             result += text.plain_text;
         }
         return result;
+    }
+
+    public async updateParagraphBlockByText(blockId: string, text: string):Promise<{ isOk: boolean, data?: UpdateBlockResponse }> {
+        const param: UpdateBlockParameters = {
+            block_id: blockId,
+            paragraph: {
+                rich_text: [{
+                    text: {
+                        content: text
+                    }
+                }],
+            }
+        };
+        return this.updateParagraphBlock(param);
+    }
+
+    private async updateParagraphBlock(updateBlockParameters: UpdateBlockParameters): Promise<{ isOk: boolean, data?: UpdateBlockResponse }> {
+        const blockId = updateBlockParameters.block_id;
+        //This is ugly, but I have no other idea because `UpdateBlockBodyRequest` is not `export`.
+        let bodyParam = JSON.parse(JSON.stringify(updateBlockParameters));
+        delete bodyParam.block_id;
+        const body = Body.json(bodyParam);
+        
+        try{
+            const response = await fetch<UpdateBlockResponse>(
+                `${this.baseUrl}/blocks/${blockId}`, {
+                method: 'PATCH',
+                headers: this.patchHeaders,
+                body: body,
+            });
+            console.debug(JSON.stringify(response));
+            if (!response.ok) {
+                console.error(`response is not ok. status: ${response.status}`);
+                return {isOk: false};
+            }
+            return {isOk: true, data: response.data};
+        } catch (e) {
+            console.error(e);
+            return {isOk: false};
+        }
     }
 }
