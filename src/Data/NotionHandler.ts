@@ -1,4 +1,15 @@
-import { BlockObjectResponse, ListBlockChildrenResponse, ParagraphBlockObjectResponse, QueryDatabaseResponse, RichTextItemResponse, TextRichTextItemResponse, UpdateBlockParameters, UpdateBlockResponse } from '@notionhq/client/build/src/api-endpoints';
+import {
+    BlockObjectResponse,
+    CreatePageParameters,
+    CreatePageResponse,
+    ListBlockChildrenResponse,
+    ParagraphBlockObjectResponse,
+    QueryDatabaseParameters,
+    QueryDatabaseResponse,
+    RichTextItemResponse,
+    UpdateBlockParameters,
+    UpdateBlockResponse
+} from '@notionhq/client/build/src/api-endpoints';
 import { Body, fetch } from '@tauri-apps/api/http'
 
 const NOTION_VERSION = '2022-06-28';
@@ -32,51 +43,127 @@ export class NotionHandler {
         }
     }
 
-    public async getPageId(dateStr: string): Promise<string | undefined> {
-        try {
-            const query = Body.json({
-                "filter": {
-                    "and": [
-                        {
-                            "property": "title",
-                            "title": {
-                                "equals": dateStr
-                            }
+    public async getPageId(title: string, dateStr: string):
+        Promise<{
+            isOk: boolean,
+            pageId?: string
+        }> {
+        const queryParam: QueryDatabaseParameters = {
+            database_id: this.dbId,
+            "filter": {
+                "and": [
+                    {
+                        "property": "title",
+                        "title": {
+                            "equals": title
                         }
-                    ]
-                }
-            });
+                    },
+                    {
+                        "property": "Date",
+                        "date": {
+                            "equals": dateStr
+                        }
+                    }
+                ]
+            }
+        }
+        //This is ugly, but I have no other idea because `QueryDatabaseBodyParameters` is not `export`.
+        let bodyParam = JSON.parse(JSON.stringify(queryParam));
+        delete bodyParam.database_id;
+        const body = Body.json(bodyParam);
+        try {
             const response = await fetch<QueryDatabaseResponse>(
                 `${this.baseUrl}/databases/${this.dbId}/query`, {
                 method: 'POST',
                 headers: this.postHeaders,
-                body: query
+                body: body
             });
             console.debug(JSON.stringify(response));
             if (!response.ok) {
                 console.error(`response is not ok. status: ${response.status}`);
-                return undefined;
+                return { isOk: false };
             }
             const res = response.data;
             if (res.results.length == 0) {
-                return undefined;
+                return { isOk: true };
             }
-            return res.results[0].id;
+            return { isOk: true, pageId: res.results[0].id };
         } catch (e) {
             console.error(e);
-            return undefined;
+            return { isOk: false };
         }
     }
 
-    public async getBlockIdText(pageId: string): Promise<{ id: string, text: string } | undefined> {
-        const blockIdParagraph = await this.getBlockIdParagraph(pageId);
-        return blockIdParagraph ? {
-            id: blockIdParagraph.id,
-            text: this.convertRichTextItemArrayToString(blockIdParagraph.textArray)
-        } : undefined;
+    public async createPage(title: string, dateStr: string):
+        Promise<{
+            isOk: boolean,
+            pageId?: string
+        }> {
+
+        const param: CreatePageParameters = {
+            parent: {
+                database_id: this.dbId,
+            },
+            properties: {
+                "title": {
+                    "title": [
+                        {
+                            "text": {
+                                "content": title,
+                            }
+                        }
+                    ]
+                },
+                "Date": {
+                    "date": {
+                        start: dateStr,
+                    }
+                }
+            }
+        }
+
+        try {
+            const response = await fetch<CreatePageResponse>(
+                `${this.baseUrl}/pages`, {
+                method: 'POST',
+                headers: this.postHeaders,
+                body: Body.json(param)
+            });
+            console.debug(JSON.stringify(response));
+            if (!response.ok) {
+                console.error(`response is not ok. status: ${response.status}`);
+                return { isOk: false };
+            }
+
+            return {isOk:true, pageId: response.data.id};
+
+        } catch (e) {
+            console.error(e);
+            return { isOk: false };
+        }
     }
 
-    private async getBlockIdParagraph(pageId: string): Promise<{ id: string; textArray: Array<RichTextItemResponse>; } | undefined> {
+    public async getBlockIdText(pageId: string):
+        Promise<{
+            isOk: boolean,
+            id?: string,
+            text?: string
+        }> {
+        const blockIdParagraph = await this.getBlockIdParagraph(pageId);
+        return blockIdParagraph.isOk ? {
+            isOk: true,
+            id: blockIdParagraph.id,
+            text: this.convertRichTextItemArrayToString(blockIdParagraph.textArray)
+        } : { isOk: false };
+    }
+
+    private async getBlockIdParagraph(pageId: string):
+        Promise<{
+            isOk: boolean,
+            id?: string,
+            textArray?:
+            Array<RichTextItemResponse>
+        }> {
         try {
             const response = await fetch<ListBlockChildrenResponse>(
                 `${this.baseUrl}/blocks/${pageId}/children?page_size=100`, {
@@ -86,16 +173,13 @@ export class NotionHandler {
             console.debug(JSON.stringify(response));
             if (!response.ok) {
                 console.error(`response is not ok. status: ${response.status}`);
-                return undefined;
+                return { isOk: false };
             }
             const res = response.data;
-            if (res.results.length == 0) {
-                return undefined;
-            }
-            //return {id: res.results[0].id, content: res.results[0].object.toString()};
             for (const result of res.results) {
                 if ((result as BlockObjectResponse).type === 'paragraph') {
                     return {
+                        isOk: true,
                         id: result.id,
                         textArray: (result as ParagraphBlockObjectResponse)
                             .paragraph
@@ -103,14 +187,17 @@ export class NotionHandler {
                     };
                 }
             }
-            return undefined;
+            return { isOk: true };
         } catch (e) {
             console.error(e);
-            return undefined;
+            return { isOk: false };
         }
     }
 
-    private convertRichTextItemArrayToString(textArray: Array<RichTextItemResponse>): string {
+    private convertRichTextItemArrayToString(textArray?: Array<RichTextItemResponse>): string | undefined {
+        if (!textArray) {
+            return undefined;
+        }
         var result = '';
         for (const text of textArray) {
             // TODO: Formatting to Markdown?
@@ -119,7 +206,12 @@ export class NotionHandler {
         return result;
     }
 
-    public async updateParagraphBlockByText(blockId: string, text: string):Promise<{ isOk: boolean, data?: UpdateBlockResponse }> {
+    public async updateParagraphBlockByText(blockId: string, text: string):
+        Promise<{
+            isOk: boolean,
+            data?: UpdateBlockResponse
+        }> {
+        // TODO: Convert form Markdown?
         const param: UpdateBlockParameters = {
             block_id: blockId,
             paragraph: {
@@ -133,14 +225,18 @@ export class NotionHandler {
         return this.updateParagraphBlock(param);
     }
 
-    private async updateParagraphBlock(updateBlockParameters: UpdateBlockParameters): Promise<{ isOk: boolean, data?: UpdateBlockResponse }> {
+    private async updateParagraphBlock(updateBlockParameters: UpdateBlockParameters):
+        Promise<{
+            isOk: boolean,
+            data?: UpdateBlockResponse
+        }> {
         const blockId = updateBlockParameters.block_id;
         //This is ugly, but I have no other idea because `UpdateBlockBodyRequest` is not `export`.
         let bodyParam = JSON.parse(JSON.stringify(updateBlockParameters));
         delete bodyParam.block_id;
         const body = Body.json(bodyParam);
-        
-        try{
+
+        try {
             const response = await fetch<UpdateBlockResponse>(
                 `${this.baseUrl}/blocks/${blockId}`, {
                 method: 'PATCH',
@@ -150,12 +246,12 @@ export class NotionHandler {
             console.debug(JSON.stringify(response));
             if (!response.ok) {
                 console.error(`response is not ok. status: ${response.status}`);
-                return {isOk: false};
+                return { isOk: false };
             }
-            return {isOk: true, data: response.data};
+            return { isOk: true, data: response.data };
         } catch (e) {
             console.error(e);
-            return {isOk: false};
+            return { isOk: false };
         }
     }
 }
