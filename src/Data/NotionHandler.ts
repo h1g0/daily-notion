@@ -10,7 +10,7 @@ import {
     UpdateBlockParameters,
     UpdateBlockResponse
 } from '@notionhq/client/build/src/api-endpoints';
-import { Body, fetch } from '@tauri-apps/api/http'
+import { Body, fetch } from '@tauri-apps/api/http';
 
 const NOTION_VERSION = '2022-06-28';
 
@@ -135,7 +135,7 @@ export class NotionHandler {
                 return { isOk: false };
             }
 
-            return {isOk:true, pageId: response.data.id};
+            return { isOk: true, pageId: response.data.id };
 
         } catch (e) {
             console.error(e);
@@ -200,7 +200,7 @@ export class NotionHandler {
         }
         var result = '';
         for (const text of textArray) {
-            // TODO: Formatting to Markdown?
+            // TODO: Format to Markdown?
             result += text.plain_text;
         }
         return result;
