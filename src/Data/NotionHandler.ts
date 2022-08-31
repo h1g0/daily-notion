@@ -14,6 +14,8 @@ import { Body, fetch } from '@tauri-apps/api/http';
 
 const NOTION_VERSION = '2022-06-28';
 
+// Have to implement by myself instead of `@notionhq/client`,
+// because `fetch` in `@tauri-apps/api/http` is not compatible to `@notionhq/client`.
 export class NotionHandler {
 
     private baseUrl: string;
