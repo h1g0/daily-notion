@@ -1,4 +1,6 @@
 import {
+    AppendBlockChildrenParameters,
+    AppendBlockChildrenResponse,
     BlockObjectResponse,
     CreatePageParameters,
     CreatePageResponse,
@@ -251,6 +253,47 @@ export class NotionHandler {
                 return { isOk: false };
             }
             return { isOk: true, data: response.data };
+        } catch (e) {
+            console.error(e);
+            return { isOk: false };
+        }
+    }
+
+    public async createParagraphBlock(pageId: string, text = ''): Promise<{
+        isOk: boolean,
+        blockId?: string,
+    }>{
+        const param: AppendBlockChildrenParameters = {
+            block_id: pageId,
+            children: [{
+                paragraph:{
+                    rich_text:[{
+                        text: {
+                            content: text
+                        }
+                    }]
+                }
+            }]
+        }
+
+        //This is ugly, but I have no other idea because `UpdateBlockBodyRequest` is not `export`.
+        let bodyParam = JSON.parse(JSON.stringify(param));
+        delete bodyParam.block_id;
+        const body = Body.json(bodyParam);
+
+        try {
+            const response = await fetch<AppendBlockChildrenResponse>(
+                `${this.baseUrl}/blocks/${pageId}/children`, {
+                method: 'PATCH',
+                headers: this.patchHeaders,
+                body: body,
+            });
+            console.debug(JSON.stringify(response.data));
+            if (!response.ok) {
+                console.error(`response is not ok. status: ${response.status}`);
+                return { isOk: false };
+            }
+            return { isOk: true, blockId: response.data.results[0].id };
         } catch (e) {
             console.error(e);
             return { isOk: false };

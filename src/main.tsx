@@ -1,10 +1,10 @@
-import { exit } from "process";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import {App} from "./App";
 import { NotionHandler } from "./Data/NotionHandler";
 import "./style.css";
 import { dbId, token } from "./TOKEN";
+import { format } from "date-fns";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
@@ -24,6 +24,9 @@ if(res.isOk && res.pageId){
     console.log(JSON.stringify(update));
   }
 }
-
-const createRes = await notion.createPage('2022-08-30', '2022-08-30');
+const todayStr = format(new Date(), 'yyyy-MM-dd');
+const createRes = await notion.createPage(todayStr, todayStr);
+if(createRes.isOk && createRes.pageId){
+  const createBlockRes = await notion.createParagraphBlock(createRes.pageId, (new Date()).toISOString());
+}
 
