@@ -1,7 +1,7 @@
 import { TextArea } from "@blueprintjs/core";
 import React from "react";
 
-export class Notepad extends React.Component {
+export class AuthInput extends React.Component {
     render() {
         return (
             <div className="AuthInput">

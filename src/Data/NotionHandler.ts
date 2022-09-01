@@ -47,57 +47,6 @@ export class NotionHandler {
         }
     }
 
-    public async getPageId(title: string, dateStr: string):
-        Promise<{
-            isOk: boolean,
-            pageId?: string
-        }> {
-        const queryParam: QueryDatabaseParameters = {
-            database_id: this.dbId,
-            "filter": {
-                "and": [
-                    {
-                        "property": "title",
-                        "title": {
-                            "equals": title
-                        }
-                    },
-                    {
-                        "property": "Date",
-                        "date": {
-                            "equals": dateStr
-                        }
-                    }
-                ]
-            }
-        }
-        //This is ugly, but I have no other idea because `QueryDatabaseBodyParameters` is not `export`.
-        let bodyParam = JSON.parse(JSON.stringify(queryParam));
-        delete bodyParam.database_id;
-        const body = Body.json(bodyParam);
-        try {
-            const response = await fetch<QueryDatabaseResponse>(
-                `${this.baseUrl}/databases/${this.dbId}/query`, {
-                method: 'POST',
-                headers: this.postHeaders,
-                body: body
-            });
-            console.debug(JSON.stringify(response));
-            if (!response.ok) {
-                console.error(`response is not ok. status: ${response.status}`);
-                return { isOk: false };
-            }
-            const res = response.data;
-            if (res.results.length == 0) {
-                return { isOk: true };
-            }
-            return { isOk: true, pageId: res.results[0].id };
-        } catch (e) {
-            console.error(e);
-            return { isOk: false };
-        }
-    }
-
     public async createPage(title: string, dateStr: string):
         Promise<{
             isOk: boolean,
@@ -133,7 +82,7 @@ export class NotionHandler {
                 headers: this.postHeaders,
                 body: Body.json(param)
             });
-            console.debug(JSON.stringify(response));
+            console.debug(JSON.stringify(response.data));
             if (!response.ok) {
                 console.error(`response is not ok. status: ${response.status}`);
                 return { isOk: false };
@@ -141,6 +90,98 @@ export class NotionHandler {
 
             return { isOk: true, pageId: response.data.id };
 
+        } catch (e) {
+            console.error(e);
+            return { isOk: false };
+        }
+    }
+
+    public async getPageId(title: string, dateStr: string):
+        Promise<{
+            isOk: boolean,
+            pageId?: string
+        }> {
+        const queryParam: QueryDatabaseParameters = {
+            database_id: this.dbId,
+            "filter": {
+                "and": [
+                    {
+                        "property": "title",
+                        "title": {
+                            "equals": title
+                        }
+                    },
+                    {
+                        "property": "Date",
+                        "date": {
+                            "equals": dateStr
+                        }
+                    }
+                ]
+            }
+        }
+        //This is ugly, but I have no other idea because `QueryDatabaseBodyParameters` is not `export`.
+        let bodyParam = JSON.parse(JSON.stringify(queryParam));
+        delete bodyParam.database_id;
+        const body = Body.json(bodyParam);
+        try {
+            const response = await fetch<QueryDatabaseResponse>(
+                `${this.baseUrl}/databases/${this.dbId}/query`, {
+                method: 'POST',
+                headers: this.postHeaders,
+                body: body
+            });
+            console.debug(JSON.stringify(response.data));
+            if (!response.ok) {
+                console.error(`response is not ok. status: ${response.status}`);
+                return { isOk: false };
+            }
+            const res = response.data;
+            if (res.results.length == 0) {
+                return { isOk: true };
+            }
+            return { isOk: true, pageId: res.results[0].id };
+        } catch (e) {
+            console.error(e);
+            return { isOk: false };
+        }
+    }
+
+    public async createParagraphBlock(pageId: string, text = ''): Promise<{
+        isOk: boolean,
+        blockId?: string,
+    }> {
+        const param: AppendBlockChildrenParameters = {
+            block_id: pageId,
+            children: [{
+                paragraph: {
+                    rich_text: [{
+                        text: {
+                            content: text
+                        }
+                    }]
+                }
+            }]
+        }
+
+        //This is ugly, but I have no other idea because `UpdateBlockBodyRequest` is not `export`.
+        let bodyParam = JSON.parse(JSON.stringify(param));
+        delete bodyParam.block_id;
+        const body = Body.json(bodyParam);
+
+        try {
+            const response = await fetch<AppendBlockChildrenResponse>(
+                `${this.baseUrl}/blocks/${pageId}/children`, {
+                method: 'PATCH',
+                headers: this.patchHeaders,
+                body: body,
+            });
+            console.debug(JSON.stringify(response.data));
+            if (!response.ok) {
+                console.error(`response is not ok. status: ${response.status}`);
+                return { isOk: false };
+            }
+            return { isOk: true, blockId: response.data.results[0].id };
         } catch (e) {
             console.error(e);
             return { isOk: false };
@@ -174,7 +215,7 @@ export class NotionHandler {
                 method: 'GET',
                 headers: this.getHeaders,
             });
-            console.debug(JSON.stringify(response));
+            console.debug('getBlockIdParagraph: \n' + JSON.stringify(response.data));
             if (!response.ok) {
                 console.error(`response is not ok. status: ${response.status}`);
                 return { isOk: false };
@@ -259,44 +300,4 @@ export class NotionHandler {
         }
     }
 
-    public async createParagraphBlock(pageId: string, text = ''): Promise<{
-        isOk: boolean,
-        blockId?: string,
-    }>{
-        const param: AppendBlockChildrenParameters = {
-            block_id: pageId,
-            children: [{
-                paragraph:{
-                    rich_text:[{
-                        text: {
-                            content: text
-                        }
-                    }]
-                }
-            }]
-        }
-
-        //This is ugly, but I have no other idea because `UpdateBlockBodyRequest` is not `export`.
-        let bodyParam = JSON.parse(JSON.stringify(param));
-        delete bodyParam.block_id;
-        const body = Body.json(bodyParam);
-
-        try {
-            const response = await fetch<AppendBlockChildrenResponse>(
-                `${this.baseUrl}/blocks/${pageId}/children`, {
-                method: 'PATCH',
-                headers: this.patchHeaders,
-                body: body,
-            });
-            console.debug(JSON.stringify(response.data));
-            if (!response.ok) {
-                console.error(`response is not ok. status: ${response.status}`);
-                return { isOk: false };
-            }
-            return { isOk: true, blockId: response.data.results[0].id };
-        } catch (e) {
-            console.error(e);
-            return { isOk: false };
-        }
-    }
 }
