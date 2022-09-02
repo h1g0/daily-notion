@@ -9,7 +9,6 @@ export class Notepad extends React.Component<{dateStr: string}, {blockId: string
             blockId: '',
             text: ''
         };
-        this.loadFromNotion();
     }
 
     render() {
@@ -24,12 +23,10 @@ export class Notepad extends React.Component<{dateStr: string}, {blockId: string
         );
     }
 
-    /*
     async componentDidMount(){
         console.debug(`componentDidMount`);
         await this.loadFromNotion();
     }
-    */
 
     private async loadFromNotion() {
         console.debug(`Notepad.handleLoad: ${this.props.dateStr}`);

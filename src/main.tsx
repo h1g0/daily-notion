@@ -8,7 +8,7 @@ localStorage.setItem('token', token);
 localStorage.setItem('dbId', dbId);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
+  //<React.StrictMode> //Commented out because `componentDidMount` is called twice if `React.StrictMode` is enabled.
     <App />
-  </React.StrictMode>
+  //</React.StrictMode>
 );
