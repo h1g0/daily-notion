@@ -15,6 +15,9 @@
         "all": true,
         "request": true,
         "scope": ["https://api.notion.com/v1/*"]
+      },
+      "window": {
+        "all": true
       }
     },
     "bundle": {
