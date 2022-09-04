@@ -1,4 +1,8 @@
-html, body, div#root, .App, .Notepad{
+html,
+body,
+div#root,
+.App,
+.Notepad {
   height: 100%;
   box-sizing: border-box;
 }

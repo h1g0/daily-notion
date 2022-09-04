@@ -9,6 +9,6 @@ localStorage.setItem('dbId', dbId);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   //<React.StrictMode> //Commented out because `componentDidMount` is called twice if `React.StrictMode` is enabled.
-    <App />
+  <App />
   //</React.StrictMode>
 );
