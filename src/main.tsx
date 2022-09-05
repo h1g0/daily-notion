@@ -1,4 +1,3 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import { App } from "./App";
 import "./style.css";
@@ -8,7 +7,8 @@ localStorage.setItem('token', token);
 localStorage.setItem('dbId', dbId);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  //<React.StrictMode> //Commented out because `componentDidMount` is called twice if `React.StrictMode` is enabled.
+  //Commented out because `componentDidMount` is called twice if `React.StrictMode` is enabled.
+  //<React.StrictMode>
   <App />
   //</React.StrictMode>
 );
