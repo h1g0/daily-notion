@@ -1,4 +1,4 @@
-# daily-notion
+# Daily Notion
 
 A simple daily note app for Notion
 
