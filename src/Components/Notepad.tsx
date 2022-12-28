@@ -17,7 +17,7 @@ export class Notepad extends React.Component<{ dateStr: string }, { blockId: str
                 fill
                 placeholder='some text here...'
                 className='mainText'
-                minLength={20}
+                style={{ height: "100%" }}
                 value={this.state.text}
             />
         );
