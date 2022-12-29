@@ -192,13 +192,15 @@ export class NotionHandler {
         Promise<{
             isOk: boolean,
             id?: string,
-            text?: string
+            text?: string,
+            lastUpdate?: Date,
         }> {
         const blockIdParagraph = await this.getBlockIdParagraph(pageId);
         return blockIdParagraph.isOk ? {
             isOk: true,
             id: blockIdParagraph.id,
-            text: this.convertRichTextItemArrayToString(blockIdParagraph.textArray)
+            text: this.convertRichTextItemArrayToString(blockIdParagraph.textArray),
+            lastUpdate: blockIdParagraph.lastUpdate
         } : { isOk: false };
     }
 
@@ -207,7 +209,8 @@ export class NotionHandler {
             isOk: boolean,
             id?: string,
             textArray?:
-            Array<RichTextItemResponse>
+            Array<RichTextItemResponse>,
+            lastUpdate?: Date,
         }> {
         try {
             const response = await fetch<ListBlockChildrenResponse>(
@@ -226,6 +229,7 @@ export class NotionHandler {
                     return {
                         isOk: true,
                         id: result.id,
+                        lastUpdate: new Date((result as ParagraphBlockObjectResponse).last_edited_time),
                         textArray: (result as ParagraphBlockObjectResponse)
                             .paragraph
                             .rich_text
