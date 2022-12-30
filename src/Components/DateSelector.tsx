@@ -3,7 +3,9 @@ import { DateInput2 } from "@blueprintjs/datetime2";
 import { format, parse } from "date-fns";
 import React from "react";
 
-export class DateSelector extends React.Component<any, { dateValue: Date }> {
+export class DateSelector extends React.Component<
+    { onDateChange: (dateValue: Date) => void },
+    { dateValue: Date }> {
     private static dateFnsFormat = 'yyyy-MM-dd';
     private static formatDate = (date: Date) => format(date, DateSelector.dateFnsFormat);
     private static parseDate = (str: string) => parse(str, DateSelector.dateFnsFormat, new Date());
@@ -49,6 +51,7 @@ export class DateSelector extends React.Component<any, { dateValue: Date }> {
         this.setState({
             dateValue: date
         });
+        this.props.onDateChange(date);
     }
 
     private readonly mSecPerDay = 1000 * 60 * 60 * 24;

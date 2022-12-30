@@ -10,15 +10,32 @@ import { format } from "date-fns";
 import { Navigation } from './Components/Navigation';
 import { Notepad } from './Components/Notepad';
 
-export class App extends React.Component {
+export class App extends React.Component<any, { dateStr: string, syncStatus: SyncStatus }> {
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      dateStr: format(new Date(), 'yyyy-MM-dd'),
+      syncStatus: 'OK',
+    };
+  }
 
-  private readonly dateStr = format(new Date(), 'yyyy-MM-dd');
   render() {
     return (
       <div className="App">
-        <Navigation />
-        <Notepad dateStr={this.dateStr} />
+        <Navigation onDateChange={this.handleDateChange} syncStatus={this.state.syncStatus}/>
+        <Notepad dateStr={this.state.dateStr} onChangeStatus={this.handleSyncStatusChange}/>
       </div>
     );
   }
+
+  handleDateChange = (dateValue: Date) => {
+    this.setState({ dateStr: format(dateValue, 'yyyy-MM-dd') });
+    window.console.debug(`Date changed: ${this.state.dateStr}`);
+  }
+
+  handleSyncStatusChange = (status: SyncStatus) =>{
+    this.setState({syncStatus : status});
+  }
 }
+
+export type SyncStatus = 'OK' | 'Error' | 'Uploading' | 'Downloading';

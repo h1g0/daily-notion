@@ -1,14 +1,21 @@
-import { TextArea } from "@blueprintjs/core";
+import { TextArea, NonIdealState, Spinner } from "@blueprintjs/core";
 import React from "react";
+import { SyncStatus } from "../App";
 import { NotionHandler } from "../Data/NotionHandler";
-export class Notepad extends React.Component<{ dateStr: string }, { blockId: string, text: string }> {
+
+export class Notepad extends React.Component<{
+        dateStr: string, onChangeStatus: (syncStatus: SyncStatus) => void
+    }, { 
+        blockId: string, text: string, isEnable: boolean 
+    }> {
     private notionHandler: NotionHandler;
 
     constructor(props: any) {
         super(props);
         this.state = {
             blockId: '',
-            text: ''
+            text: '',
+            isEnable: true,
         };
 
         const token = localStorage.getItem('token') ?? '';
@@ -17,6 +24,13 @@ export class Notepad extends React.Component<{ dateStr: string }, { blockId: str
     }
 
     render() {
+        if (!this.state.isEnable) {
+            return (
+            <NonIdealState
+                icon={<Spinner />}
+                title={'Loading...'}
+            />);
+        }
         return (
             <TextArea
                 fill
@@ -31,11 +45,18 @@ export class Notepad extends React.Component<{ dateStr: string }, { blockId: str
 
     async componentDidMount() {
         console.debug(`componentDidMount`);
-        await this.loadFromNotion();
+        this.loadFromNotion(this.props.dateStr);
+    }
+
+    shouldComponentUpdate(nextProps: any) {
+        if (this.props.dateStr !== nextProps.dateStr) {
+            this.loadFromNotion(nextProps.dateStr);
+        }
+        return true;
     }
 
     private syncTimerId: number | undefined;
-    private readonly syncTimerMs = 1000;
+    private readonly syncTimerMs = 500;
 
     private handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         this.setState({ text: event.target.value });
@@ -45,27 +66,32 @@ export class Notepad extends React.Component<{ dateStr: string }, { blockId: str
         }
         this.syncTimerId = window.setTimeout(() => {
             this.syncTimerId = undefined;
-            Notepad.setBlockTextById(this.notionHandler, this.state.blockId, this.state.text);
+            this.setBlockTextById(this.notionHandler, this.state.blockId, this.state.text);
         }, this.syncTimerMs);
     };
 
-    private async loadFromNotion() {
-        console.debug(`Notepad.handleLoad: ${this.props.dateStr}`);
-        const getBlockIdTextResult = await Notepad.getBlockIdText(this.notionHandler, this.props.dateStr, this.props.dateStr);
+    private async loadFromNotion(dateStr: string) {
+        console.debug(`Notepad.handleLoad: ${dateStr}`);
+        this.setState({ isEnable: false });
+        this.props.onChangeStatus('Downloading');
+        const getBlockIdTextResult = await this.getBlockIdText(this.notionHandler, dateStr, dateStr);
         const blockId = getBlockIdTextResult.blockId ?? '';
         const text = getBlockIdTextResult.blockText ?? '';
+        this.props.onChangeStatus(getBlockIdTextResult.isOk ? 'OK' : 'Error');
         this.setState({
             blockId: blockId,
-            text: text
+            text: text,
+            isEnable: true,
         });
     }
 
-    private static async setBlockTextById(notionHandler : NotionHandler, blockId: string, blockText: string){
-        console.debug(`setBlockTextById: ${blockText}`);
-        notionHandler.updateParagraphBlockByText(blockId, blockText);
+    private async setBlockTextById(notionHandler: NotionHandler, blockId: string, blockText: string) {
+        this.props.onChangeStatus('Uploading');
+        const updateBlockResult = await notionHandler.updateParagraphBlockByText(blockId, blockText);
+        this.props.onChangeStatus(updateBlockResult.isOk ? 'OK' : 'Error');
     }
 
-    private static async getBlockIdText(notionHandler: NotionHandler, title: string, dateStr: string):
+    private async getBlockIdText(notionHandler: NotionHandler, title: string, dateStr: string):
         Promise<{
             isOk: boolean,
             blockId?: string,
