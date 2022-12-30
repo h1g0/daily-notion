@@ -39,35 +39,30 @@ export class DateSelector extends React.Component<any, { dateValue: Date }> {
         );
     }
 
-    private handleChange(newDateStr: string | null) {
+    private handleChange(newDate: Date | string | null) {
+        let date = new Date();
+        if (newDate instanceof Date) {
+            date = newDate;
+        } else if (newDate) {
+            date = DateSelector.parseDate(newDate);
+        }
         this.setState({
-            dateValue: DateSelector.parseDate(newDateStr ?? this.getTodayStr())
+            dateValue: date
         });
     }
 
     private readonly mSecPerDay = 1000 * 60 * 60 * 24;
+
     private setNextDay() {
-        this.setState(state => {
-            return {
-                dateValue: new Date(state.dateValue.getTime() + this.mSecPerDay)
-            }
-        });
+        this.handleChange(new Date(this.state.dateValue.getTime() + this.mSecPerDay));
     }
 
     private setPreviousDay() {
-        this.setState(state => {
-            return {
-                dateValue: new Date(state.dateValue.getTime() - this.mSecPerDay)
-            }
-        });
+        this.handleChange(new Date(this.state.dateValue.getTime() - this.mSecPerDay));
     }
 
     private setToday() {
-        this.setState(state => {
-            return {
-                dateValue: new Date()
-            }
-        });
+        this.handleChange(new Date());
     }
 
     private getTodayStr() {
