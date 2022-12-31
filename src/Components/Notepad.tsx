@@ -66,11 +66,15 @@ export class Notepad extends React.Component<{
 
     async componentDidMount() {
         console.debug(`componentDidMount`);
-        if ((await this.notionHandler.verifyConnectivity()).isOk) {
+        let connectivity = await this.notionHandler.verifyConnectivity();
+        if (connectivity.isOk) {
             this.setState({ isConnectivityVerified: true });
             this.loadFromNotion(this.props.dateStr);
         }else{
-            this.setState({ isConnectivityVerified: false });
+            this.setState({
+                isConnectivityVerified: false,
+                isLoading: false
+            });
         }
     }
 

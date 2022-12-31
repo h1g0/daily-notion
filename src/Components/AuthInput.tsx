@@ -121,6 +121,7 @@ export class AuthInput extends React.Component<{
                     intent: 'danger',
                     icon: 'warning-sign'
                 });
+                this.setState({ isAuthFailed: true });
             }
         });
     }
