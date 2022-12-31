@@ -1,6 +1,6 @@
 # Daily Notion
 
-A simple daily note application for Notion
+A simple daily notes application using Notion API
 
 ![](./doc/screenshot1.png)
 
@@ -42,9 +42,10 @@ Saved on a page titled with a date in the format "YY-MM-DD".
 ## Install
 
 1. Install [Rust, Cargo](https://rustup.rs), [Node.js](https://nodejs.org/en/), and [yarn](https://yarnpkg.com)
-2. Clone this repository like `git clone git@github.com:h1g0/daily-notion.git`
-3. `cd daily-notion`
-4. `yarn`
+2. Install Tauri dependencies (cf. <https://tauri.app/v1/guides/getting-started/prerequisites>)
+3. Clone this repository like `git clone git@github.com:h1g0/daily-notion.git`
+4. `cd daily-notion`
+5. `yarn`
 
 ## Commands
 
