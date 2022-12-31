@@ -2,7 +2,7 @@ name: 'build-test'
 on: [push, pull_request]
 
 jobs:
-  test-tauri:
+  build-test:
     strategy:
       fail-fast: false
       matrix:
