@@ -106,7 +106,7 @@ export class AuthInput extends React.Component<{
 
     private handleClickAuthButton = () => {
         const notion = new NotionHandler(this.state.token, this.state.dbId);
-        notion.verifyConnect().then((result) => {
+        notion.verifyConnectivity().then((result) => {
             if (result.isOk) {
                 this.saveTokenDbId(this.state.token, this.state.dbId);
                 Toaster.create().show({

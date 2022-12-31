@@ -47,7 +47,7 @@ export class NotionHandler {
         }
     }
 
-    public async verifyConnect(): Promise<{isOk: boolean}>{
+    public async verifyConnectivity(): Promise<{isOk: boolean}>{
         const queryParam: QueryDatabaseParameters = {
             database_id: this.dbId,
             page_size: 0,

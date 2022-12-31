@@ -10,7 +10,7 @@ export class Notepad extends React.Component<{
 }, {
     blockId: string,
     text: string,
-    isEnable: boolean,
+    isLoading: boolean,
     isConnectivityVerified: boolean,
 }> {
     private notionHandler: NotionHandler;
@@ -20,7 +20,7 @@ export class Notepad extends React.Component<{
         this.state = {
             blockId: '',
             text: '',
-            isEnable: false,
+            isLoading: true,
             isConnectivityVerified: false,
         };
 
@@ -30,7 +30,7 @@ export class Notepad extends React.Component<{
     }
 
     render() {
-        if (!this.state.isEnable) {
+        if (this.state.isLoading) {
             return (
                 <NonIdealState
                     icon={<Spinner />}
@@ -66,9 +66,11 @@ export class Notepad extends React.Component<{
 
     async componentDidMount() {
         console.debug(`componentDidMount`);
-        if (await this.notionHandler.verifyConnect()) {
+        if ((await this.notionHandler.verifyConnectivity()).isOk) {
             this.setState({ isConnectivityVerified: true });
             this.loadFromNotion(this.props.dateStr);
+        }else{
+            this.setState({ isConnectivityVerified: false });
         }
     }
 
@@ -96,7 +98,7 @@ export class Notepad extends React.Component<{
 
     private async loadFromNotion(dateStr: string) {
         console.debug(`Notepad.handleLoad: ${dateStr}`);
-        this.setState({ isEnable: false });
+        this.setState({ isLoading: true });
         this.props.onChangeStatus('Downloading');
         const getBlockIdTextResult = await this.getBlockIdText(this.notionHandler, dateStr, dateStr);
         const blockId = getBlockIdTextResult.blockId ?? '';
@@ -105,7 +107,7 @@ export class Notepad extends React.Component<{
         this.setState({
             blockId: blockId,
             text: text,
-            isEnable: true,
+            isLoading: false,
         });
     }
 
