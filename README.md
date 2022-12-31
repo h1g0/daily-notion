@@ -1,6 +1,43 @@
 # Daily Notion
 
-A simple daily note app for Notion
+A simple daily note application for Notion
+
+![](./doc/screenshot1.png)
+
+## Features
+
+- You can start taking notes as soon as you open the application.
+- Create / Load pages automatically for each date.
+- Simple screen
+- Real-time saving to Notion automatically.
+
+## Usage
+
+### Install　(for non-developers)
+
+Executables and installers for each OS (Windows, macOS, Linux) will be available soon.
+
+### Authentication on Notion
+
+![](./doc/screenshot_auth.png)
+
+When the program is launched for the first time, a dialog box will appear asking for authorization.
+
+Please refer to [this page](https://developers.notion.com/docs/create-a-notion-integration) to create an integration in your Notion working space.
+
+After you get an integration token and a database ID, enter them and press the "Authentication" button.
+
+### Taking notes
+
+Enjoy.
+
+The notes you write will be saved automatically.
+
+The location of the notes is the database you have selected in Notion.
+
+Saved on a page titled with a date in the format "YY-MM-DD".
+
+## For developers
 
 ## Install
 
