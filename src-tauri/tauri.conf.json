@@ -18,6 +18,9 @@
       },
       "window": {
         "all": true
+      },
+      "shell": {
+        "open": true
       }
     },
     "bundle": {

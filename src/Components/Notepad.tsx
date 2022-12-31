@@ -2,12 +2,17 @@ import { TextArea, NonIdealState, Spinner } from "@blueprintjs/core";
 import React from "react";
 import { SyncStatus } from "../App";
 import { NotionHandler } from "../Data/NotionHandler";
+import { AuthInput } from "./AuthInput";
 
 export class Notepad extends React.Component<{
-        dateStr: string, onChangeStatus: (syncStatus: SyncStatus) => void
-    }, { 
-        blockId: string, text: string, isEnable: boolean 
-    }> {
+    dateStr: string,
+    onChangeStatus: (syncStatus: SyncStatus) => void,
+}, {
+    blockId: string,
+    text: string,
+    isEnable: boolean,
+    isConnectivityVerified: boolean,
+}> {
     private notionHandler: NotionHandler;
 
     constructor(props: any) {
@@ -15,7 +20,8 @@ export class Notepad extends React.Component<{
         this.state = {
             blockId: '',
             text: '',
-            isEnable: true,
+            isEnable: false,
+            isConnectivityVerified: false,
         };
 
         const token = localStorage.getItem('token') ?? '';
@@ -26,17 +32,32 @@ export class Notepad extends React.Component<{
     render() {
         if (!this.state.isEnable) {
             return (
-            <NonIdealState
-                icon={<Spinner />}
-                title={'Loading...'}
-            />);
+                <NonIdealState
+                    icon={<Spinner />}
+                    title={'Loading...'}
+                />);
         }
+
+        if (!this.state.isConnectivityVerified) {
+            return (
+                <AuthInput
+                    token={localStorage.getItem('token') ?? ''}
+                    dbId={localStorage.getItem('dbId') ?? ''}
+                    onClosed={() => {
+                        this.setState({ isConnectivityVerified: true });
+                        this.notionHandler = new NotionHandler(localStorage.getItem('token') ?? '', localStorage.getItem('dbId') ?? '');
+                        this.loadFromNotion(this.props.dateStr);
+                    }}
+                />
+            );
+        }
+
         return (
             <TextArea
                 fill
-                placeholder='some text here...'
+                placeholder='Enter some text here...'
                 onChange={this.handleChange}
-                className='mainText'
+                className={'mainText'}
                 style={{ height: "100%" }}
                 value={this.state.text}
             />
@@ -45,7 +66,10 @@ export class Notepad extends React.Component<{
 
     async componentDidMount() {
         console.debug(`componentDidMount`);
-        this.loadFromNotion(this.props.dateStr);
+        if (await this.notionHandler.verifyConnect()) {
+            this.setState({ isConnectivityVerified: true });
+            this.loadFromNotion(this.props.dateStr);
+        }
     }
 
     shouldComponentUpdate(nextProps: any) {

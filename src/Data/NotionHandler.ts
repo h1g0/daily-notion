@@ -47,6 +47,38 @@ export class NotionHandler {
         }
     }
 
+    public async verifyConnect(): Promise<{isOk: boolean}>{
+        const queryParam: QueryDatabaseParameters = {
+            database_id: this.dbId,
+            page_size: 0,
+        }
+        //This is ugly, but I have no other idea because `QueryDatabaseBodyParameters` is not `export`.
+        let bodyParam = JSON.parse(JSON.stringify(queryParam));
+        delete bodyParam.database_id;
+        const body = Body.json(bodyParam);
+        try {
+            const response = await fetch<QueryDatabaseResponse>(
+                `${this.baseUrl}/databases/${this.dbId}/query`, {
+                method: 'POST',
+                headers: this.postHeaders,
+                body: body
+            });
+            console.debug(JSON.stringify(response.data));
+            if (!response.ok) {
+                console.error(`response is not ok. status: ${response.status}`);
+                return { isOk: false };
+            }
+            const res = response.data;
+            if (res.results.length == 0) {
+                return { isOk: true };
+            }
+            return { isOk: true };
+        } catch (e) {
+            console.error(e);
+            return { isOk: false };
+        }
+    }
+
     public async createPage(title: string, dateStr: string):
         Promise<{
             isOk: boolean,
@@ -103,6 +135,7 @@ export class NotionHandler {
         }> {
         const queryParam: QueryDatabaseParameters = {
             database_id: this.dbId,
+            page_size: 1,
             "filter": {
                 "and": [
                     {
@@ -118,7 +151,11 @@ export class NotionHandler {
                         }
                     }
                 ]
-            }
+            },
+            "sorts":[{
+                "timestamp":"created_time",
+                "direction":"ascending"
+            }]
         }
         //This is ugly, but I have no other idea because `QueryDatabaseBodyParameters` is not `export`.
         let bodyParam = JSON.parse(JSON.stringify(queryParam));
