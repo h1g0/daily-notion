@@ -61,5 +61,3 @@ This application is built with the following structure:
 
 - Run: `yarn tauri dev`
 - Build: `yarn tauri build`
-
-## 
