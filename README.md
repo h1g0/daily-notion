@@ -16,7 +16,7 @@ Note: Currently, it is under development. and only "sort-of usable" level functi
 
 ### 1. Install　(for non-developers)
 
-Executables and installers for each OS (Windows, macOS, Linux) will be available soon.
+Installers for each OS (Windows, macOS, Linux) are available [here](https://github.com/h1g0/daily-notion/releases).
 
 ### 2. Authentication on Notion
 
