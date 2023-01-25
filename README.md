@@ -2,7 +2,11 @@
 
 A simple daily notes application using Notion API
 
+Screenshot of the main screen:
 ![Screenshot of the main screen](./doc/screenshot1.png)
+
+GIF video of the main screen (Left window. Notice the real-time saving in Notion on the right):
+![Screenshot animation of the main screen](./doc/screenshot_gif.gif)
 
 ## Features
 
@@ -14,7 +18,10 @@ Note: Currently, it is under development. and only "sort-of usable" level functi
 
 ## Usage
 
-### 1. Install　(for non-developers)
+日本語での詳細な使い方は[こちら](https://zenn.dev/hg/articles/dd9399406f04da)をご覧下さい。  
+For detailed instructions in Japanese, please see [here](https://zenn.dev/hg/articles/dd9399406f04da).
+
+### 1. Install (for non-developers)
 
 Installers for each OS (Windows, macOS, Linux) are available [here](https://github.com/h1g0/daily-notion/releases).
 
