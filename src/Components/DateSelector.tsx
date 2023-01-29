@@ -2,6 +2,10 @@ import { AnchorButton, NavbarGroup } from "@blueprintjs/core";
 import { DateInput2 } from "@blueprintjs/datetime2";
 import { format, parse } from "date-fns";
 import React from "react";
+import "@blueprintjs/datetime2/lib/css/blueprint-datetime2.css";
+import "@blueprintjs/datetime/lib/css/blueprint-datetime.css";
+import "@blueprintjs/popover2/lib/css/blueprint-popover2.css";
+import "@blueprintjs/select/lib/css/blueprint-select.css";
 
 export class DateSelector extends React.Component<
     { onDateChange: (dateValue: Date) => void },

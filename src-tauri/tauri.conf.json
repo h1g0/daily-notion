@@ -6,7 +6,7 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "daily-notion",
+    "productName": "Daily Notion",
     "version": "../package.json"
   },
   "tauri": {
@@ -26,7 +26,8 @@
     "bundle": {
       "active": true,
       "category": "Productivity",
-      "copyright": "Copyright (c) 2022 hi_go",
+      "publisher": "hi_go",
+      "copyright": "Copyright (c) 2023 hi_go",
       "deb": {
         "depends": []
       },
@@ -47,7 +48,7 @@
         "signingIdentity": null
       },
       "resources": [],
-      "shortDescription": "",
+      "shortDescription": "A simple daily notes application using Notion API.",
       "targets": "all",
       "windows": {
         "certificateThumbprint": null,
@@ -65,9 +66,11 @@
       {
         "fullscreen": false,
         "height": 600,
+        "minHeight": 300,
         "resizable": true,
         "title": "Daily Notion",
-        "width": 800
+        "width": 800,
+        "minWidth": 400
       }
     ]
   }

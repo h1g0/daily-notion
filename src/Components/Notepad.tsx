@@ -1,9 +1,9 @@
 import { TextArea, NonIdealState, Spinner } from "@blueprintjs/core";
 import React from "react";
+import { Navigate } from "react-router-dom";
 import { SyncStatus } from "../App";
 import { NotionHandler } from "../Data/NotionHandler";
-import { AuthInput } from "./AuthInput";
-
+import './Notepad.css';
 export class Notepad extends React.Component<{
     dateStr: string,
     onChangeStatus: (syncStatus: SyncStatus) => void,
@@ -38,27 +38,17 @@ export class Notepad extends React.Component<{
                 />);
         }
 
-        if (!this.state.isConnectivityVerified) {
-            return (
-                <AuthInput
-                    token={localStorage.getItem('token') ?? ''}
-                    dbId={localStorage.getItem('dbId') ?? ''}
-                    onClosed={() => {
-                        this.setState({ isConnectivityVerified: true });
-                        this.notionHandler = new NotionHandler(localStorage.getItem('token') ?? '', localStorage.getItem('dbId') ?? '');
-                        this.loadFromNotion(this.props.dateStr);
-                    }}
-                />
-            );
+        if(!this.state.isConnectivityVerified){
+            return(<Navigate to="/auth"/>);
         }
 
         return (
             <TextArea
+                id="notepadText"
                 fill
                 placeholder='Enter some text here...'
                 onChange={this.handleChange}
                 className={'mainText'}
-                style={{ height: "100%" }}
                 value={this.state.text}
             />
         );

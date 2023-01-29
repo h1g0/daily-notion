@@ -1,0 +1,5 @@
+#notepadText{
+    flex-grow: 100;
+    flex-shrink: 100;
+    resize: none;
+}
