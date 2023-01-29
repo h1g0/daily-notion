@@ -9,6 +9,7 @@ import { format } from "date-fns";
 
 import { Navigation } from './Components/Navigation';
 import { Notepad } from './Components/Notepad';
+import { Classes } from '@blueprintjs/core';
 
 export class App extends React.Component<any, { dateStr: string, syncStatus: SyncStatus }> {
   constructor(props: any) {
@@ -21,7 +22,7 @@ export class App extends React.Component<any, { dateStr: string, syncStatus: Syn
 
   render() {
     return (
-      <div className="App">
+      <div className={"App"}>
         <Navigation onDateChange={this.handleDateChange} syncStatus={this.state.syncStatus}/>
         <Notepad dateStr={this.state.dateStr} onChangeStatus={this.handleSyncStatusChange}/>
       </div>
