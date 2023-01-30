@@ -1,9 +1,11 @@
-import { TextArea, NonIdealState, Spinner } from "@blueprintjs/core";
-import React from "react";
+import { NonIdealState, Spinner, Card } from "@blueprintjs/core";
+import React, { ChangeEvent } from "react";
 import { Navigate } from "react-router-dom";
 import { SyncStatus } from "../App";
 import { NotionHandler } from "../Data/NotionHandler";
+import MDEditor, { ContextStore } from '@uiw/react-md-editor';
 import './Notepad.css';
+import { CredentialHandler } from "../Data/CredentialHandler";
 export class Notepad extends React.Component<{
     dateStr: string,
     onChangeStatus: (syncStatus: SyncStatus) => void,
@@ -24,32 +26,39 @@ export class Notepad extends React.Component<{
             isConnectivityVerified: false,
         };
 
-        const token = localStorage.getItem('token') ?? '';
-        const dbId = localStorage.getItem('dbId') ?? '';
+        const token = CredentialHandler.get('token');
+        const dbId = CredentialHandler.get('dbId');
         this.notionHandler = new NotionHandler(token, dbId);
     }
 
     render() {
+        if (!this.state.isConnectivityVerified && !this.state.isLoading) {
+            return (<Navigate to="/auth" />);
+        }
+
         if (this.state.isLoading) {
             return (
-                <NonIdealState
-                    icon={<Spinner />}
-                    title={'Loading...'}
-                />);
+                <Card
+                    className={"notepad-content"}
+                >
+                    <NonIdealState
+                        icon={<Spinner />}
+                        title={'Loading...'}
+                    />
+                </Card>
+            );
         }
 
-        if(!this.state.isConnectivityVerified){
-            return(<Navigate to="/auth"/>);
-        }
+
 
         return (
-            <TextArea
-                id="notepadText"
-                fill
-                placeholder='Enter some text here...'
-                onChange={this.handleChange}
-                className={'mainText'}
+            <MDEditor
+                className={"notepad-content"}
                 value={this.state.text}
+                id="notepad-text"
+                aria-disabled={this.state.isLoading}
+                onChange={this.handleChange}
+                placeholder='Enter some text here...'
             />
         );
     }
@@ -60,7 +69,7 @@ export class Notepad extends React.Component<{
         if (connectivity.isOk) {
             this.setState({ isConnectivityVerified: true });
             this.loadFromNotion(this.props.dateStr);
-        }else{
+        } else {
             this.setState({
                 isConnectivityVerified: false,
                 isLoading: false
@@ -78,8 +87,8 @@ export class Notepad extends React.Component<{
     private syncTimerId: number | undefined;
     private readonly syncTimerMs = 500;
 
-    private handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-        this.setState({ text: event.target.value });
+    private handleChange = (value?: string | undefined, event?: ChangeEvent<HTMLTextAreaElement> | undefined, state?: ContextStore | undefined) => {
+        this.setState({ text: event?.target.value ? event.target.value : '' });
 
         if (this.syncTimerId) {
             clearTimeout(this.syncTimerId);

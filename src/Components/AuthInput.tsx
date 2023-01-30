@@ -1,7 +1,9 @@
-import { Button, Classes, Dialog, FormGroup, InputGroup, Intent, Toaster } from "@blueprintjs/core";
+import { Button, Card, Classes, Dialog, FormGroup, InputGroup, Intent, Toaster } from "@blueprintjs/core";
 import React from "react";
 import { NotionHandler } from "../Data/NotionHandler";
-
+import { CredentialHandler } from "../Data/CredentialHandler";
+import './AuthInput.css';
+import { PreferencesHandler } from "../Data/PreferencesHandler";
 export class AuthInput extends React.Component<{
     token: string,
     dbId: string,
@@ -28,72 +30,75 @@ export class AuthInput extends React.Component<{
     }
     render() {
         return (
-            <Dialog className="AuthInput"
-                autoFocus
-                enforceFocus
-                usePortal
-                canEscapeKeyClose={false}
-                canOutsideClickClose={false}
-                isCloseButtonShown={false}
-                isOpen={this.state.isOpen}
-                onClosed={this.props.onClosed}
-                title={'Authentication Required'}
-                icon={'info-sign'}
-            >
-                <form>
-                    <div className={Classes.DIALOG_BODY}>
-                        <p>
-                            <strong>To use this application, authentication on Notion is required first.</strong>
-                        </p>
-                        <ol>
-                            <li>Refer to <strong><a href="https://developers.notion.com/docs/create-a-notion-integration" target="_blank">this page</a></strong> and create an internal integration.</li>
-                            <li>Enter the <strong>Integration Token</strong> and <strong>Database ID</strong> you obtained.</li>
-                            <li>Press "Authenticate" button.</li>
-                        </ol>
-                        <FormGroup
-                            label="Integration Token"
-                            labelFor="token-input"
-                            labelInfo="(required)"
-                        >
-                            <InputGroup
-                                id="token-input"
-                                placeholder="Integration Token"
-                                value={this.state.token}
-                                disabled={this.state.isLoading}
-                                onChange={this.handleChangeToken}
-                                intent={this.state.isAuthFailed ? Intent.DANGER : Intent.NONE}
-                            />
-                        </FormGroup>
+            <Card className="auth-content">
+                <Dialog
+                    className={PreferencesHandler.getColorMode() === 'dark' ? Classes.DARK : ''}
+                    autoFocus
+                    enforceFocus
+                    usePortal
+                    canEscapeKeyClose={false}
+                    canOutsideClickClose={false}
+                    isCloseButtonShown={false}
+                    isOpen={this.state.isOpen}
+                    onClosed={this.props.onClosed}
+                    title={'Authentication Required'}
+                    icon={'info-sign'}
+                >
+                    <form>
+                        <div className={Classes.DIALOG_BODY}>
+                            <p>
+                                <strong>To use this application, authentication on Notion is required first.</strong>
+                            </p>
+                            <ol>
+                                <li>Refer to <strong><a href="https://developers.notion.com/docs/create-a-notion-integration" target="_blank">this page</a></strong> and create an internal integration.</li>
+                                <li>Enter the <strong>Integration Token</strong> and <strong>Database ID</strong> you obtained.</li>
+                                <li>Press "Authenticate" button.</li>
+                            </ol>
+                            <FormGroup
+                                label="Integration Token"
+                                labelFor="token-input"
+                                labelInfo="(required)"
+                            >
+                                <InputGroup
+                                    id="token-input"
+                                    placeholder="Integration Token"
+                                    value={this.state.token}
+                                    disabled={this.state.isLoading}
+                                    onChange={this.handleChangeToken}
+                                    intent={this.state.isAuthFailed ? Intent.DANGER : Intent.NONE}
+                                />
+                            </FormGroup>
 
-                        <FormGroup
-                            label="Database ID"
-                            labelFor="dbid-input"
-                            labelInfo="(required)"
-                        >
-                            <InputGroup
-                                id="dbid-input"
-                                placeholder="Database ID"
-                                value={this.state.dbId}
-                                disabled={this.state.isLoading}
-                                onChange={this.handleChangeDbId}
-                                intent={this.state.isAuthFailed ? Intent.DANGER : Intent.NONE}
-                            />
-                        </FormGroup>
-                    </div>
-                    <div className={Classes.DIALOG_FOOTER}>
-                        <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-                            <Button
-                                id="authenticate-button"
-                                intent={'primary'}
-                                loading={this.state.isLoading}
-                                disabled={!this.state.isAuthButtonEnable}
-                                onClick={this.handleClickAuthButton}
-                                type="submit"
-                            >Authenticate</Button>
+                            <FormGroup
+                                label="Database ID"
+                                labelFor="dbid-input"
+                                labelInfo="(required)"
+                            >
+                                <InputGroup
+                                    id="dbid-input"
+                                    placeholder="Database ID"
+                                    value={this.state.dbId}
+                                    disabled={this.state.isLoading}
+                                    onChange={this.handleChangeDbId}
+                                    intent={this.state.isAuthFailed ? Intent.DANGER : Intent.NONE}
+                                />
+                            </FormGroup>
                         </div>
-                    </div>
-                </form>
-            </Dialog>
+                        <div className={Classes.DIALOG_FOOTER}>
+                            <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+                                <Button
+                                    id="authenticate-button"
+                                    intent={'primary'}
+                                    loading={this.state.isLoading}
+                                    disabled={!this.state.isAuthButtonEnable}
+                                    onClick={this.handleClickAuthButton}
+                                    type="submit"
+                                >Authenticate</Button>
+                            </div>
+                        </div>
+                    </form>
+                </Dialog>
+            </Card>
         );
     }
 
@@ -135,13 +140,13 @@ export class AuthInput extends React.Component<{
                 });
                 this.setState({ isAuthFailed: true });
             }
-        }).finally(()=>{
+        }).finally(() => {
             this.setState({ isLoading: false });
         });
     }
 
     private saveTokenDbId(token: string, dbId: string) {
-        localStorage.setItem('token', token);
-        localStorage.setItem('dbId', dbId);
+        CredentialHandler.set('token', token);
+        CredentialHandler.set('dbId', dbId);
     }
 };
