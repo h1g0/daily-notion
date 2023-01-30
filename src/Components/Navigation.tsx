@@ -44,9 +44,10 @@ export class Navigation extends React.Component<
       icon = 'error';
       intent = 'danger';
     }
+
     return (
       <div id="navigation">
-        <Navbar className={Classes.DARK}>
+        <Navbar >
           <NavbarGroup align={Alignment.LEFT}>
             <MainMenu />
             <NavbarDivider />
@@ -65,10 +66,10 @@ export class Navigation extends React.Component<
   }
 
   handleClickMenuButton = () => {
-    if(this.state.isMenuOpen){
-      this.setState({isMenuOpen:false});
-    }else{
-      this.setState({isMenuOpen:true});
+    if (this.state.isMenuOpen) {
+      this.setState({ isMenuOpen: false });
+    } else {
+      this.setState({ isMenuOpen: true });
     }
   }
 };

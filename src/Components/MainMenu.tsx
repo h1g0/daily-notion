@@ -1,5 +1,5 @@
-import { AnchorButton, Menu, MenuDivider, MenuItem, Position } from "@blueprintjs/core";
-import { MenuItem2, PlacementOptions, Popover2 } from "@blueprintjs/popover2";
+import { AnchorButton, Menu, MenuDivider } from "@blueprintjs/core";
+import { MenuItem2,  Popover2 } from "@blueprintjs/popover2";
 import React from "react";
 import "@blueprintjs/popover2/lib/css/blueprint-popover2.css";
 

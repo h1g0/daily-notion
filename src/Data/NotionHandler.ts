@@ -47,7 +47,7 @@ export class NotionHandler {
         }
     }
 
-    public async verifyConnectivity(): Promise<{isOk: boolean}>{
+    public async verifyConnectivity(): Promise<{ isOk: boolean }> {
         const queryParam: QueryDatabaseParameters = {
             database_id: this.dbId,
             page_size: 0,
@@ -152,9 +152,9 @@ export class NotionHandler {
                     }
                 ]
             },
-            "sorts":[{
-                "timestamp":"created_time",
-                "direction":"ascending"
+            "sorts": [{
+                "timestamp": "created_time",
+                "direction": "ascending"
             }]
         }
         //This is ugly, but I have no other idea because `QueryDatabaseBodyParameters` is not `export`.

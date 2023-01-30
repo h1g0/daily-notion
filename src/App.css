@@ -1,13 +1,13 @@
 html,
 body,
 div#root,
-.App,
+.app,
 .Notepad {
   height: 100%;
   box-sizing: border-box;
 }
 
-.App{
+.app{
   display: flex;
   flex-direction: column;
   justify-content: start;
