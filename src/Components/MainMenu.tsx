@@ -35,7 +35,7 @@ export class MainMenu extends React.Component<
             <Menu>
                 <MenuItem2 icon="cog" text="Settings">
                     <MenuItem2 icon="key" text={"Authentication"} href="/auth"/>
-                    <MenuItem2 icon="settings" text={"Preferenses"} href="/preferenses" disabled/>
+                    <MenuItem2 icon="settings" text={"Preferences"} href="/preferences" disabled/>
                 </MenuItem2>
                 <MenuItem2 icon="blank" text="About" href="/about" disabled/>
                 <MenuDivider />
