@@ -31,9 +31,32 @@ For detailed instructions in Japanese, please see [here](https://zenn.dev/hg/art
 
 ### 1. Install (for non-developers)
 
-Installers for each OS (Windows, macOS, Linux) are available [here](https://github.com/h1g0/daily-notion/releases).
+#### Windows
 
-Note: Due to code signing issues, the downloaded installer may not currently work depending on your system settings. In that case, please try [building from source code](#install).
+1. Download `Daily.Notion_x.x.x_x64_en-US.msi` from [here](https://github.com/h1g0/daily-notion/releases).
+2. Run the downloaded msi file.
+3. If Microsoft Defender SmartScreen prevents installation, click "More info" then "Run anyway".
+
+#### macOS
+
+1. Download `Daily.Notion.app.tar.gz` from [here](https://github.com/h1g0/daily-notion/releases).
+2. Run `xattr -c ./Daily.Notion.app.tar.gz` to avoid "unknown developer" warning.
+3. Run `tar xzvf ./Daily.Notion.app.tar.gz` to extract.
+4. Execute `Daily Notion.app`.
+
+#### Linux
+
+##### Debian
+
+1. Download `daily-notion_x.x.x_amd64.deb` from [here](https://github.com/h1g0/daily-notion/releases).
+2. Run `sudo apt install ./daily-notion_x.x.x_amd64.deb` to install.
+
+##### AppImage
+
+1. Download `daily-notion_x.x.x_amd64.AppImage` from [here](https://github.com/h1g0/daily-notion/releases).
+2. Run `chmod u+x daily-notion_x.x.x_amd64.AppImage && ./daily-notion_x.x.x_amd64.AppImage` to execute.
+
+Note: If you want to build from source code for reasons such as building for ARM64 (e.g. Apple Silicon), try [building from source code](#install).
 
 ### 2. Authentication on Notion
 
